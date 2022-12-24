@@ -151,6 +151,9 @@ int main()
 
   result* res = dijkstra(graph, 4, 0);
   print_result(res, 4, 0);
+
+  delete graph;
+  delete res;
   
-  return 1;
+  return 0;
 }
