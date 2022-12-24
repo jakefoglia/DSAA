@@ -1,6 +1,5 @@
 #include <iostream>
-#include<ctime>
-
+#include <ctime>
 
 void insertion_sort(int* array, int length)
 {
@@ -109,6 +108,66 @@ void heap_sort(int* array, int length)
   }
 }
 
+void merge_sort(int* array, int length)
+{
+  if(length < 2)
+  {
+    return;
+  }
+
+  int half_len = length/2;
+
+  int* l_array = array;
+  int* r_array = array+half_len;
+
+  int l_len = half_len;
+  int r_len = (length % 2 == 0) ? half_len : half_len + 1;
+
+  merge_sort(l_array, l_len); // left partition
+  merge_sort(r_array, r_len); // right partition
+
+  int l = 0;
+  int r = 0; 
+
+  int* temp_array = new int[length];
+  int i = 0;
+
+  // merge into temp_array
+  while( l < l_len && r < r_len)
+  {
+    if(l_array[l] < r_array[r])
+    {
+      temp_array[i] = l_array[l++];
+    }
+    else
+    {
+      temp_array[i] = r_array[r++];
+    }
+    i++;
+  }
+
+  // finish off grabbing from l_array if r_array ran out first
+  while( l < l_len )
+  {
+    temp_array[i] = l_array[l++];
+    i++;
+  }
+
+  // finish off grabbing from r_array if l_array ran out first
+  while( r < r_len )
+  {
+    temp_array[i] = r_array[r++];
+    i++;
+  }
+
+  // put back into original array
+  memcpy(array, temp_array, length*(sizeof(int)));
+
+  // free temp_array
+  delete [] temp_array;
+
+}
+
 void print_array (int* array, int length)
 {
   for(int i = 0; i < length; i++)
@@ -151,6 +210,13 @@ int main()
   memcpy(array, source_array, length*sizeof(int));
   print_array(array, length);
   heap_sort(array, length);
+  print_array(array, length);
+
+  // merge sort
+  std::cout << "\ntesting merge sort" << std::endl;
+  memcpy(array, source_array, length*sizeof(int));
+  print_array(array, length);
+  merge_sort(array, length);
   print_array(array, length);
 
   // free memory
