@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <chrono>
 
 void insertion_sort(int* array, int length)
 {
@@ -177,11 +178,43 @@ void print_array (int* array, int length)
   std::cout << std::endl; 
 } 
 
+bool verify_sorted(int* array, int length)
+{
+  for(int i = 0; i < length - 1; i++)
+  {
+    if(array[i] > array[i+1])
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+void test(int* source_array, int* array, int length, void (*sort_func)(int*, int), const char* func_name)
+{
+  std::cout << "\nsorting " << length << " elements using " << func_name << "..." << std::endl;
+  memcpy(array, source_array, length*sizeof(int));
+  
+  //print_array(array, length);
+
+  auto start = std::chrono::high_resolution_clock::now();
+  sort_func(array, length);
+  auto end = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> diff = end - start;
+  
+  bool passed = verify_sorted(array, length);
+  std::cout << (passed ? "passed in " : "failed in ") << diff.count() << "s" << std::endl;
+  
+  //print_array(array, length);
+
+}
+
 int main()
 {
   srand(time(0));
   
-  int length = 20;
+  int length = 10000;
 
   // inclusive
   int lower_lim = 100;
@@ -194,30 +227,15 @@ int main()
     source_array[i] = rand() % (upper_lim - lower_lim + 1) - lower_lim;
   }
 
-  // allocate memory array to be sorted
+  // allocate memory for array to be sorted by each test (will be reinitialized to source_array before each test)
   int* array = new int[length];
 
-  // insertion sort
-  std::cout << "\ntesting insertion sort" << std::endl;
-  memcpy(array, source_array, length*sizeof(int));
-  print_array(array, length);
-  insertion_sort(array, length);
-  print_array(array, length);
 
+  test(source_array, array, length, insertion_sort, "insertion sort");
+  test(source_array, array, length, heap_sort, "heap sort");
+  test(source_array, array, length, merge_sort, "merge sort");
+  //test(source_array, array, length, quick_sort, "quick sort");
 
-  // heap sort
-  std::cout << "\ntesting heap sort" << std::endl;
-  memcpy(array, source_array, length*sizeof(int));
-  print_array(array, length);
-  heap_sort(array, length);
-  print_array(array, length);
-
-  // merge sort
-  std::cout << "\ntesting merge sort" << std::endl;
-  memcpy(array, source_array, length*sizeof(int));
-  print_array(array, length);
-  merge_sort(array, length);
-  print_array(array, length);
 
   // free memory
   delete [] source_array;
