@@ -21,6 +21,12 @@ struct result
     }
   }
 
+  ~result()
+  {
+    delete [] distances;
+    delete [] froms;
+  }
+
 }; 
 
 // helper method
@@ -152,7 +158,12 @@ int main()
   result* res = dijkstra(graph, 4, 0);
   print_result(res, 4, 0);
 
-  delete graph;
+  for(int r = 0; r < 4; r++)
+  {
+    delete [] (graph[r]);
+  }
+  delete [] graph; 
+  
   delete res;
   
   return 0;

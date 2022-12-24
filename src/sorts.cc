@@ -154,8 +154,8 @@ int main()
   print_array(array, length);
 
   // free memory
-  delete source_array;
-  delete array; 
+  delete [] source_array;
+  delete [] array; 
 
   return 0;
 }
