@@ -109,8 +109,22 @@ void heap_sort(int* array, int length)
   }
 }
 
-void merge_sort(int* array, int length)
+
+void merge_sort_internal(int* array, int length, int* temp_buffer = nullptr)
 {
+  bool buffer_provided;
+
+  if(temp_buffer == nullptr)
+  {
+    temp_buffer = new int[length];
+    buffer_provided = false;
+  }
+  else
+  {
+    buffer_provided = true;
+  }
+
+
   if(length < 2)
   {
     return;
@@ -124,25 +138,24 @@ void merge_sort(int* array, int length)
   int l_len = half_len;
   int r_len = (length % 2 == 0) ? half_len : half_len + 1;
 
-  merge_sort(l_array, l_len); // left partition
-  merge_sort(r_array, r_len); // right partition
+  merge_sort_internal(l_array, l_len); // left partition
+  merge_sort_internal(r_array, r_len); // right partition
 
   int l = 0;
   int r = 0; 
 
-  int* temp_array = new int[length];
   int i = 0;
 
-  // merge into temp_array
+  // merge into temp_buffer
   while( l < l_len && r < r_len)
   {
     if(l_array[l] < r_array[r])
     {
-      temp_array[i] = l_array[l++];
+      temp_buffer[i] = l_array[l++];
     }
     else
     {
-      temp_array[i] = r_array[r++];
+      temp_buffer[i] = r_array[r++];
     }
     i++;
   }
@@ -150,23 +163,30 @@ void merge_sort(int* array, int length)
   // finish off grabbing from l_array if r_array ran out first
   while( l < l_len )
   {
-    temp_array[i] = l_array[l++];
+    temp_buffer[i] = l_array[l++];
     i++;
   }
 
   // finish off grabbing from r_array if l_array ran out first
   while( r < r_len )
   {
-    temp_array[i] = r_array[r++];
+    temp_buffer[i] = r_array[r++];
     i++;
   }
 
   // put back into original array
-  memcpy(array, temp_array, length*(sizeof(int)));
+  memcpy(array, temp_buffer, length*(sizeof(int)));
 
-  // free temp_array
-  delete [] temp_array;
+  if(!buffer_provided)
+  {
+    delete [] temp_buffer;
+  }
 
+}
+
+void merge_sort(int* array, int length)
+{
+  merge_sort_internal(array, length);
 }
 
 void print_array (int* array, int length)
